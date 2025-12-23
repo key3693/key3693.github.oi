@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>汽车厂商销量分析报告</title>
+
+    <!-- 静态资源引用 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+
+    <!-- 内联数据区 -->
+    <script>
+        const source_data = [
+            {"排名": 1, "车型名称": "比亚迪", "销量": 258892},
+            {"排名": 2, "车型名称": "吉利银河", "销量": 123047},
+            {"排名": 3, "车型名称": "五菱汽车", "销量": 95686},
+            {"排名": 4, "车型名称": "鸿蒙智行", "销量": 81864},
+            {"排名": 5, "车型名称": "特斯拉", "销量": 73145},
+            {"排名": 6, "车型名称": "零跑汽车", "销量": 60979},
+            {"排名": 7, "车型名称": "AITO 问界", "销量": 51706},
+            {"排名": 8, "车型名称": "小米汽车", "销量": 46249},
+            {"排名": 9, "车型名称": "方程豹", "销量": 35289},
+            {"排名": 10, "车型名称": "理想汽车", "销量": 33181}
+        ];
+
+        const chart_data = {
+            labels: ["比亚迪", "吉利银河", "五菱汽车", "鸿蒙智行", "特斯拉", "零跑汽车", "AITO 问界", "小米汽车", "方程豹", "理想汽车"],
+            sales: [258892, 123047, 95686, 81864, 73145, 60979, 51706, 46249, 35289, 33181]
+        };
+
+        const statistics = {
+            total_sales: 1092380,
+            average_sales: 54619,
+            max_sales: 258892,
+            max_brand: "比亚迪",
+            min_sales: 18186,
+            min_brand: "蔚来",
+            total_brands: 20
+        };
+    </script>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+    <!-- 头部 -->
+    <header class="bg-white shadow-lg border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-6 py-8">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                    <i class="fas fa-car text-blue-600 mr-3"></i>
+                    汽车厂商销量分析报告
+                </h1>
+                <p class="text-lg text-gray-600">2025年度各品牌汽车销量排名与市场份额分析</p>
+                <p class="text-sm text-gray-500 mt-2">数据来源：官网数据</p> <!-- 新增数据来源小字 -->
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-8 space-y-8">
+        <!-- 统计概览 -->
+        <section class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                <i class="fas fa-chart-bar text-green-600 mr-3"></i>
+                销量统计概览
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-6 text-white transform hover:scale-105 transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-blue-100 text-sm font-medium">总销量</p>
+                            <p class="text-2xl font-bold" id="totalSales">1,092,380</p>
+                        </div>
+                        <i class="fas fa-calculator text-3xl text-blue-200"></i>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-6 text-white transform hover:scale-105 transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-green-100 text-sm font-medium">平均销量</p>
+                            <p class="text-2xl font-bold" id="avgSales">54,619</p>
+                        </div>
+                        <i class="fas fa-chart-line text-3xl text-green-200"></i>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl p-6 text-white transform hover:scale-105 transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-purple-100 text-sm font-medium">最高销量</p>
+                            <p class="text-xl font-bold">比亚迪</p>
+                            <p class="text-lg font-semibold">258,892</p>
+                        </div>
+                        <i class="fas fa-trophy text-3xl text-purple-200"></i>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl p-6 text-white transform hover:scale-105 transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-orange-100 text-sm font-medium">参与品牌</p>
+                            <p class="text-2xl font-bold">20</p>
+                        </div>
+                        <i class="fas fa-building text-3xl text-orange-200"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 销量条形图 -->
+        <section class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                <i class="fas fa-chart-column text-blue-600 mr-3"></i>
+                各厂商销量排名（前10名）
+            </h2>
+            <div class="relative h-96">
+                <canvas id="salesChart"></canvas>
+            </div>
+        </section>
+
+        <!-- 样例数据表格 -->
+        <section class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                <i class="fas fa-table text-indigo-600 mr-3"></i>
+                样例数据（前10名）
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="w-full table-auto">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-200">
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900">排名</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900">厂商名称</th>
+                            <th class="px-6 py-4 text-right text-sm font-semibold text-gray-900">销量</th>
+                            <th class="px-6 py-4 text-right text-sm font-semibold text-gray-900">市场份额</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataTable" class="divide-y divide-gray-200">
+                        <!-- 数据将通过JavaScript填充 -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeChart();
+            populateDataTable();
+            animateNumbers();
+        });
+
+        // 初始化销量条形图
+        function initializeChart() {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: chart_data.labels,
+                    datasets: [{
+                        label: '销量',
+                        data: chart_data.sales,
+                        backgroundColor: [
+                            '#3B82F6', '#10B981', '#8B5CF6', '#F59E0B', '#EF4444',
+                            '#06B6D4', '#84CC16', '#F97316', '#EC4899', '#6366F1'
+                        ],
+                        borderColor: [
+                            '#2563EB', '#059669', '#7C3AED', '#D97706', '#DC2626',
+                            '#0891B2', '#65A30D', '#EA580C', '#DB2777', '#4F46E5'
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: 'white',
+                            bodyColor: 'white',
+                            borderColor: 'rgba(255, 255, 255, 0.2)',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    return `销量: ${context.parsed.y.toLocaleString()} 辆`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString();
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+        }
+
+        // 填充数据表格
+        function populateDataTable() {
+            const tableBody = document.getElementById('dataTable');
+            const totalSales = statistics.total_sales;
+
+            source_data.forEach((item, index) => {
+                const marketShare = ((item.销量 / totalSales) * 100).toFixed(1);
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50 transition-colors duration-200';
+
+                row.innerHTML = `
+                    <td class="px-6 py-4 text-sm font-medium text-gray-900">
+                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-800 font-bold">
+                            ${item.排名}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-900 font-medium">${item.车型名称}</td>
+                    <td class="px-6 py-4 text-sm text-gray-900 text-right font-semibold">${item.销量.toLocaleString()}</td>
+                    <td class="px-6 py-4 text-sm text-gray-900 text-right">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            ${marketShare}%
+                        </span>
+                    </td>
+                `;
+
+                tableBody.appendChild(row);
+            });
+        }
+
+        // 数字动画效果
+        function animateNumbers() {
+            const totalSalesEl = document.getElementById('totalSales');
+            const avgSalesEl = document.getElementById('avgSales');
+
+            animateValue(totalSalesEl, 0, statistics.total_sales, 2000);
+            animateValue(avgSalesEl, 0, statistics.average_sales, 2000);
+        }
+
+        function animateValue(element, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const current = Math.floor(progress * (end - start) + start);
+                element.textContent = current.toLocaleString();
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+    </script>
+</body>
+</html>

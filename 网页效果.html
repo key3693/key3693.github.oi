@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>输出区嵌入HTML文件 6按钮切换布局</title>
+    <style>
+        /* 重置默认边距，消除布局干扰 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 仅保留全局垂直滚动，隐藏水平滚动（唯一滚动条） */
+        html, body {
+            width: 100%;
+            overflow-x: hidden; /* 彻底禁止水平滚动 */
+            overflow-y: auto; /* 全局唯一滚动条 */
+            font-size: 18px;
+            min-height: 100vh; /* 防止布局塌陷 */
+        }
+
+        /* 介绍区：背景透明+图片填充 */
+        #intro-area {
+            width: 100vw;
+            height: 50vh;
+            background-color: transparent;
+            border: 2px solid transparent;
+            padding: 20px;
+            background-image: url("首页图.jpg");
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            position: relative;
+            color: #fff;
+            text-shadow: 0 0 5px #000;
+        }
+
+        /* 介绍区文字容器（已去除背景和内边距，隐藏内容） */
+        #intro-content {
+            display: none; /* 直接隐藏容器，彻底去除淡黑色区域 */
+        }
+
+        /* 功能区：6按钮六等分 */
+        #function-area {
+            width: 100vw;
+            height: calc(100vh / 6);
+            background-color: #f5f5dc;
+            border: 2px solid transparent;
+            padding: 0;
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 0;
+        }
+
+        /* 按钮通用样式：适配文字显示 */
+        .func-btn {
+            flex: 1;
+            flex-shrink: 0;
+            height: 100%;
+            border: none;
+            outline: none;
+            font-size: 14px; /* 适配文字长度，防止溢出 */
+            letter-spacing: 0; /* 汉字无间距 */
+            font-kerning: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            padding: 0 2px;
+        }
+
+        /* 按钮选中状态（按下时）- 深蓝色 */
+        .func-btn.active {
+            background-color: #1a56db !important; /* 深蓝色 */
+            color: #fff !important; /* 白色文字提高对比度 */
+        }
+
+        /* 按钮未选中状态（断开时）- 淡蓝色 */
+        .func-btn:not(.active) {
+            background-color: #e6f0ff; /* 淡蓝色 */
+            color: #333; /* 深色文字保持可读性 */
+        }
+
+        /* 按钮悬浮效果（非选中状态） */
+        .func-btn:hover:not(.active) {
+            background-color: #bfd7ff; /* 稍深的淡蓝色增强交互感 */
+        }
+
+        /* 输出区：扩展到底部 */
+        #output-area {
+            width: 100vw;
+            min-height: calc(100vh - 50vh - calc(100vh / 6));
+            height: auto;
+            background-color: #f8f8ff;
+            border: 2px solid transparent;
+            padding: 15px;
+            margin: 0;
+        }
+
+        /* iframe容器：自适应内容高度，无边框 */
+        #html-container {
+            width: 100%;
+            height: auto; /* 高度自适应内容 */
+            border: none; /* 去除iframe默认边框 */
+            display: block; /* 块级元素，防止布局错乱 */
+            overflow: hidden; /* 禁止自身滚动 */
+        }
+
+        /* HTML加载失败提示 */
+        .html-fallback {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ff4444;
+            font-size: 16px;
+            background-color: #fefefe;
+            border: 1px dashed #ccc;
+            flex-direction: column;
+        }
+
+        /* 联系区：竖直高度1/3屏幕，边框透明，全屏宽度 */
+        #contact-area {
+            width: 100vw; /* 全屏长度 */
+            height: calc(100vh / 3); /* 竖直高度1/3屏幕 */
+            background-color: #f0f0f0; /* 协调背景色，可自定义 */
+            border: 2px solid transparent; /* 边框透明 */
+            padding: 20px; /* 内边距，优化内容显示 */
+            font-size: 18px;
+            color: #333; /* 文字颜色 */
+            display: flex; /* 居中布局 */
+            align-items: center; /* 垂直居中 */
+            justify-content: center; /* 水平居中 */
+            flex-direction: column; /* 文字纵向排列 */
+        }
+    </style>
+</head>
+<body>
+    <!-- 介绍区（已去除文字和淡黑色区域） -->
+    <div id="intro-area">
+        <div id="intro-content">
+            <!-- 内容已完全去除 -->
+        </div>
+    </div>
+
+    <!-- 功能区：6个按钮（新增市场预测分析） -->
+    <div id="function-area">
+        <button class="func-btn active" id="home-btn">首页</button>
+        <button class="func-btn" id="market-size-btn">市场规模</button>
+        <button class="func-btn" id="enterprise-compete-btn">企业竞争格局</button>
+        <button class="func-btn" id="price-btn">价格结构</button>
+        <button class="func-btn" id="region-diff-btn">区域差异</button>
+        <button class="func-btn" id="market-forecast-btn">市场预测分析</button>
+    </div>
+
+    <!-- 输出区：嵌入HTML文件（替换原有PDF） -->
+    <div id="output-area">
+        <!-- iframe嵌入HTML，初始加载首页.html，新增失败提示 -->
+        <iframe id="html-container" src="首页.html" frameborder="0">
+            <div class="html-fallback">
+                <p>HTML文件加载失败！</p>
+                <p>请检查文件是否存在或路径是否正确</p>
+            </div>
+        </iframe>
+    </div>
+
+    <!-- 联系区：保留原有样式 -->
+    <div id="contact-area">
+        <h2>联系区</h2>
+        <p>竖直高度：1/3个电脑屏幕</p>
+        <p>长度：整个电脑屏幕长度（100vw）</p>
+        <p>联系方式：可自定义填写电话、邮箱等信息</p>
+    </div>
+
+    <script>
+        // DOM加载完成后执行
+        document.addEventListener("DOMContentLoaded", function() {
+            const homeBtn = document.getElementById("home-btn");
+            const marketSizeBtn = document.getElementById("market-size-btn");
+            const enterpriseCompeteBtn = document.getElementById("enterprise-compete-btn");
+            const priceBtn = document.getElementById("price-btn");
+            const regionDiffBtn = document.getElementById("region-diff-btn");
+            const marketForecastBtn = document.getElementById("market-forecast-btn");
+            const htmlContainer = document.getElementById("html-container");
+            const allBtns = [homeBtn, marketSizeBtn, enterpriseCompeteBtn, priceBtn, regionDiffBtn, marketForecastBtn];
+
+            // 元素校验
+            if (!htmlContainer || allBtns.some(btn => !btn)) {
+                console.error("元素获取失败！请检查按钮/HTML容器ID是否正确");
+                return;
+            }
+
+            // 动态调整iframe高度以匹配内容
+            function adjustIframeHeight() {
+                try {
+                    // 获取iframe内部文档高度（需同源）
+                    const iframeDoc = htmlContainer.contentDocument || htmlContainer.contentWindow.document;
+                    // 计算内容总高度（包括padding和margin）
+                    const contentHeight = iframeDoc.body.scrollHeight;
+                    // 设置iframe高度（增加50px冗余避免内容截断）
+                    htmlContainer.style.height = contentHeight + 50 + 'px';
+                } catch (e) {
+                    console.error('无法获取iframe内容高度（可能存在跨域限制）：', e);
+                }
+            }
+
+            // 监听iframe加载完成事件，动态调整高度
+            htmlContainer.addEventListener('load', adjustIframeHeight);
+
+            // 通用选中函数
+            function setActiveBtn(currentBtn) {
+                if (!currentBtn) return;
+                allBtns.forEach(btn => btn.classList.remove("active"));
+                currentBtn.classList.add("active");
+            }
+
+            // 首页按钮：加载首页.html
+            homeBtn.addEventListener("click", function() {
+                setActiveBtn(this);
+                // 强制刷新，避免缓存
+                htmlContainer.src = "首页.html?timestamp=" + new Date().getTime();
+            });
+
+            // 市场规模按钮：加载市场规模.html
+            marketSizeBtn.addEventListener("click", function() {
+                setActiveBtn(this);
+                htmlContainer.src = "市场规模.html?timestamp=" + new Date().getTime();
+            });
+
+            // 企业竞争格局按钮：加载企业竞争格局.html
+            enterpriseCompeteBtn.addEventListener("click", function() {
+                setActiveBtn(this);
+                htmlContainer.src = "企业竞争格局.html?timestamp=" + new Date().getTime();
+            });
+
+            // 价格结构按钮：加载价格结构.html
+            priceBtn.addEventListener("click", function() {
+                setActiveBtn(this);
+                htmlContainer.src = "价格结构.html?timestamp=" + new Date().getTime();
+            });
+
+            // 区域差异按钮：加载区域差异.html
+            regionDiffBtn.addEventListener("click", function() {
+                setActiveBtn(this);
+                htmlContainer.src = "区域差异.html?timestamp=" + new Date().getTime();
+            });
+
+            // 市场预测分析按钮：加载市场预测分析.html
+            marketForecastBtn.addEventListener("click", function() {
+                setActiveBtn(this);
+                htmlContainer.src = "市场预测分析.html?timestamp=" + new Date().getTime();
+            });
+        });
+    </script>
+</body>
+</html>

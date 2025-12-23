@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>历年5月公共充电桩保有量热力图</title>
+    <script type="text/javascript" src="https://assets.pyecharts.org/assets/v5/echarts.min.js"></script>
+    <script type="text/javascript" src="https://assets.pyecharts.org/assets/v5/maps/china.js"></script>
+    <script type="text/javascript" src="https://assets.pyecharts.org/assets/v5/themes/macarons.js"></script>
+    <style>
+        .btn-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .year-btn {
+            padding: 10px 20px;
+            margin: 0 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .year-btn.active {
+            background-color: #2E7D32;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+            font-weight: bold;
+        }
+        .year-btn:hover:not(.active) {
+            background-color: #45a049;
+        }
+        .chart-container {
+            width: 1400px;
+            height: 900px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="btn-container">
+        <button class="year-btn active" data-year="2023">2023年5月</button>
+        <button class="year-btn" data-year="2024">2024年5月</button>
+        <button class="year-btn" data-year="2025">2025年5月</button>
+    </div>
+    <div id="chart-container" class="chart-container"></div>
+
+    <script>
+        var chart = echarts.init(document.getElementById('chart-container'), 'macarons', {renderer: 'canvas', locale: 'ZH'});
+
+        // 统一的tooltip配置（优化显示效果）
+        const tooltipConfig = {
+            "show": true,
+            "trigger": "item",
+            "triggerOn": "mousemove", // 鼠标悬停即显示
+            "axisPointer": {"type": "shadow"},
+            "showContent": true,
+            "alwaysShowContent": false,
+            "showDelay": 50, // 稍作延迟避免误触
+            "hideDelay": 300,
+            "enterable": true, // 允许鼠标进入tooltip
+            "confine": true, // 限制在图表区域内
+            "backgroundColor": "rgba(255, 255, 255, 0.95)",
+            "borderColor": "#ddd",
+            "borderWidth": 1,
+            "padding": 10,
+            "textStyle": {"color": "#333", "fontSize": 14, "fontWeight": "500"},
+            "formatter": function(params) {
+                // 格式化显示内容，增加可读性
+                return `<div style="font-weight:bold;">${params.name}</div>
+                        <div>公共充电桩保有量：${params.value.toLocaleString()} 台</div>`;
+            },
+            "extraCssText": "box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 4px;"
+        };
+
+        // 2023年数据配置
+        var option2023 = {
+            "animation": true,
+            "animationThreshold": 2000,
+            "animationDuration": 1000,
+            "animationEasing": "cubicOut",
+            "series": [{
+                "type": "map",
+                "name": "2023年5月公共充电桩保有量（台）",
+                "label": {"show": true, "margin": 8, "fontSize": 10},
+                "map": "china",
+                "data": [
+                    {"name": "北京市", "value": 115527},
+                    {"name": "天津市", "value": 53041},
+                    {"name": "河北省", "value": 54625},
+                    {"name": "山西省", "value": 37617},
+                    {"name": "内蒙古自治区", "value": 9683},
+                    {"name": "辽宁省", "value": 14094},
+                    {"name": "吉林省", "value": 7451},
+                    {"name": "黑龙江省", "value": 9185},
+                    {"name": "上海市", "value": 137183},
+                    {"name": "江苏省", "value": 148670},
+                    {"name": "浙江省", "value": 149026},
+                    {"name": "安徽省", "value": 97414},
+                    {"name": "福建省", "value": 80089},
+                    {"name": "江西省", "value": 29621},
+                    {"name": "山东省", "value": 101364},
+                    {"name": "河南省", "value": 80730},
+                    {"name": "湖北省", "value": 116070},
+                    {"name": "湖南省", "value": 45756},
+                    {"name": "广东省", "value": 461135},
+                    {"name": "广西壮族自治区", "value": 41420},
+                    {"name": "海南省", "value": 33652},
+                    {"name": "重庆市", "value": 45065},
+                    {"name": "四川省", "value": 74399},
+                    {"name": "贵州省", "value": 26053},
+                    {"name": "云南省", "value": 37373},
+                    {"name": "西藏自治区", "value": 687},
+                    {"name": "陕西省", "value": 51688},
+                    {"name": "甘肃省", "value": 9756},
+                    {"name": "青海省", "value": 2716},
+                    {"name": "宁夏回族自治区", "value": 3687},
+                    {"name": "新疆维吾尔自治区", "value": 6466}
+                ],
+                "roam": false,  // 固定地图，禁止缩放和拖动
+                "aspectScale": 0.75,
+                "zoom": 1
+            }],
+            "legend": [{
+                "data": ["2023年5月公共充电桩保有量（台）"],
+                "show": true
+            }],
+            "tooltip": tooltipConfig, // 使用统一配置
+            "title": [{
+                "show": true,
+                "text": "中国各省区公共充电桩保有量热力图（2023年5月）",
+                "subtext": "数据来源：中国电动汽车充电基础设施促进联盟 | 数值范围：687-461,135台",
+                "left": "center",
+                "top": "20px",
+                "textStyle": {"fontWeight": "bold", "fontSize": 20}
+            }],
+            "visualMap": {
+                "show": true,
+                "type": "piecewise",
+                "min": 687,
+                "max": 461135,
+                "inRange": {"color": ["#50a3ba", "#eac763", "#d94e5d"]},
+                "calculable": true,
+                "orient": "vertical",
+                "left": "left",
+                "top": "center",
+                "pieces": [
+                    {"min": 200000, "label": "20万+台", "color": "#8B0000"},
+                    {"min": 100000, "max": 199999, "label": "10-20万台", "color": "#CD5C5C"},
+                    {"min": 50000, "max": 99999, "label": "5-10万台", "color": "#FF6347"},
+                    {"min": 20000, "max": 49999, "label": "2-5万台", "color": "#FFA500"},
+                    {"min": 5000, "max": 19999, "label": "0.5-2万台", "color": "#FFD700"},
+                    {"min": 0, "max": 4999, "label": "0-0.5万台", "color": "#90EE90"}
+                ]
+            }
+        };
+
+        // 2024年数据配置（复用tooltipConfig）
+        var option2024 = {
+            "animation": true,
+            "series": [{
+                "type": "map",
+                "name": "2024年5月公共充电桩保有量（台）",
+                "label": {"show": true, "margin": 8, "fontSize": 10},
+                "map": "china",
+                "data": [
+                    {"name": "北京市", "value": 137134},
+                    {"name": "天津市", "value": 83462},
+                    {"name": "河北省", "value": 85244},
+                    {"name": "山西省", "value": 57568},
+                    {"name": "内蒙古自治区", "value": 23733},
+                    {"name": "辽宁省", "value": 25321},
+                    {"name": "吉林省", "value": 12736},
+                    {"name": "黑龙江省", "value": 14210},
+                    {"name": "上海市", "value": 189428},
+                    {"name": "江苏省", "value": 244625},
+                    {"name": "浙江省", "value": 255027},
+                    {"name": "安徽省", "value": 137704},
+                    {"name": "福建省", "value": 102287},
+                    {"name": "江西省", "value": 47160},
+                    {"name": "山东省", "value": 162725},
+                    {"name": "河南省", "value": 139284},
+                    {"name": "湖北省", "value": 151284},
+                    {"name": "湖南省", "value": 62833},
+                    {"name": "广东省", "value": 588294},
+                    {"name": "广西壮族自治区", "value": 64309},
+                    {"name": "海南省", "value": 48130},
+                    {"name": "重庆市", "value": 64611},
+                    {"name": "四川省", "value": 127463},
+                    {"name": "贵州省", "value": 43777},
+                    {"name": "云南省", "value": 57965},
+                    {"name": "西藏自治区", "value": 1726},
+                    {"name": "陕西省", "value": 73509},
+                    {"name": "甘肃省", "value": 17430},
+                    {"name": "青海省", "value": 4636},
+                    {"name": "宁夏回族自治区", "value": 6269},
+                    {"name": "新疆维吾尔自治区", "value": 16464}
+                ],
+                "roam": false,  // 固定地图，禁止缩放和拖动
+                "aspectScale": 0.75,
+                "zoom": 1
+            }],
+            "legend": [{
+                "data": ["2024年5月公共充电桩保有量（台）"],
+                "show": true
+            }],
+            "tooltip": tooltipConfig, // 复用统一配置
+            "title": [{
+                "show": true,
+                "text": "中国各省区公共充电桩保有量热力图（2024年5月）",
+                "subtext": "数据来源：中国电动汽车充电基础设施促进联盟 | 数值范围：1,726-588,294台",
+                "left": "center",
+                "top": "20px",
+                "textStyle": {"fontWeight": "bold", "fontSize": 20}
+            }],
+            "visualMap": {
+                "show": true,
+                "type": "piecewise",
+                "min": 1726,
+                "max": 588294,
+                "inRange": {"color": ["#50a3ba", "#eac763", "#d94e5d"]},
+                "calculable": true,
+                "orient": "vertical",
+                "left": "left",
+                "top": "center",
+                "pieces": [
+                    {"min": 200000, "label": "20万+台", "color": "#8B0000"},
+                    {"min": 100000, "max": 199999, "label": "10-20万台", "color": "#CD5C5C"},
+                    {"min": 50000, "max": 99999, "label": "5-10万台", "color": "#FF6347"},
+                    {"min": 20000, "max": 49999, "label": "2-5万台", "color": "#FFA500"},
+                    {"min": 5000, "max": 19999, "label": "0.5-2万台", "color": "#FFD700"},
+                    {"min": 0, "max": 4999, "label": "0-0.5万台", "color": "#90EE90"}
+                ]
+            }
+        };
+
+        // 2025年数据配置（复用tooltipConfig）
+        var option2025 = {
+            "animation": true,
+            "series": [{
+                "type": "map",
+                "name": "2025年5月公共充电桩保有量（台）",
+                "label": {"show": true, "margin": 8, "fontSize": 10},
+                "map": "china",
+                "data": [
+                    {"name": "北京市", "value": 152158},
+                    {"name": "天津市", "value": 97848},
+                    {"name": "河北省", "value": 140000},
+                    {"name": "山西省", "value": 88808},
+                    {"name": "内蒙古自治区", "value": 43801},
+                    {"name": "辽宁省", "value": 40395},
+                    {"name": "吉林省", "value": 21265},
+                    {"name": "黑龙江省", "value": 23489},
+                    {"name": "上海市", "value": 244434},
+                    {"name": "江苏省", "value": 320586},
+                    {"name": "浙江省", "value": 339864},
+                    {"name": "安徽省", "value": 180757},
+                    {"name": "福建省", "value": 128303},
+                    {"name": "江西省", "value": 75206},
+                    {"name": "山东省", "value": 235893},
+                    {"name": "河南省", "value": 196688},
+                    {"name": "湖北省", "value": 180510},
+                    {"name": "湖南省", "value": 88237},
+                    {"name": "广东省", "value": 723252},
+                    {"name": "广西壮族自治区", "value": 91220},
+                    {"name": "海南省", "value": 63776},
+                    {"name": "重庆市", "value": 85574},
+                    {"name": "四川省", "value": 177794},
+                    {"name": "贵州省", "value": 60893},
+                    {"name": "云南省", "value": 79227},
+                    {"name": "西藏自治区", "value": 2937},
+                    {"name": "陕西省", "value": 99781},
+                    {"name": "甘肃省", "value": 26760},
+                    {"name": "青海省", "value": 8309},
+                    {"name": "宁夏回族自治区", "value": 15064},
+                    {"name": "新疆维吾尔自治区", "value": 46665}
+                ],
+                "roam": false,  // 固定地图，禁止缩放和拖动
+                "aspectScale": 0.75,
+                "zoom": 1
+            }],
+            "legend": [{
+                "data": ["2025年5月公共充电桩保有量（台）"],
+                "show": true
+            }],
+            "tooltip": tooltipConfig, // 复用统一配置
+            "title": [{
+                "show": true,
+                "text": "中国各省区公共充电桩保有量热力图（2025年5月）",
+                "subtext": "数据来源：中国电动汽车充电基础设施促进联盟 | 数值范围：2,937-723,252台",
+                "left": "center",
+                "top": "20px",
+                "textStyle": {"fontWeight": "bold", "fontSize": 20}
+            }],
+            "visualMap": {
+                "show": true,
+                "type": "piecewise",
+                "min": 2937,
+                "max": 723252,
+                "inRange": {"color": ["#50a3ba", "#eac763", "#d94e5d"]},
+                "calculable": true,
+                "orient": "vertical",
+                "left": "left",
+                "top": "center",
+                "pieces": [
+                    {"min": 200000, "label": "20万+台", "color": "#8B0000"},
+                    {"min": 100000, "max": 199999, "label": "10-20万台", "color": "#CD5C5C"},
+                    {"min": 50000, "max": 99999, "label": "5-10万台", "color": "#FF6347"},
+                    {"min": 20000, "max": 49999, "label": "2-5万台", "color": "#FFA500"},
+                    {"min": 5000, "max": 19999, "label": "0.5-2万台", "color": "#FFD700"},
+                    {"min": 0, "max": 4999, "label": "0-0.5万台", "color": "#90EE90"}
+                ]
+            }
+        };
+
+        function switchYear(year) {
+            var allButtons = document.querySelectorAll('.year-btn');
+            allButtons.forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.year-btn[data-year="' + year + '"]').classList.add('active');
+
+            if (year === 2023) {
+                chart.setOption(option2023);
+            } else if (year === 2024) {
+                chart.setOption(option2024);
+            } else if (year === 2025) {
+                chart.setOption(option2025);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.year-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    switchYear(parseInt(this.getAttribute('data-year')));
+                });
+            });
+            switchYear(2023);
+        });
+
+        window.addEventListener('resize', () => chart.resize());
+    </script>
+</body>
+</html>
